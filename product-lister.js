@@ -3,6 +3,11 @@
 $(document).ready(function () {
 
 var ProductLister = {
+
+  RESPONSE_SEPARATOR: '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@',
+
+  products: null,
+
   meta: {
     sorting: null,
     paging: null,
@@ -97,10 +102,28 @@ var ProductLister = {
    * get the list of products (and updated filter options) from the back-end
    */
   getListing: function () {
-    // TODO make request
-    this.notifyChange();
+    var me = this;
+    $.ajax({
+      method: 'get',
+      url: 'server-mock/plain-text',
+      success: function (re) {
+        re = re.split(me.RESPONSE_SEPARATOR);
+        if (me.length > 1) {
+          console.log(re);
+          var meta = '';
+          eval('meta = ' + re[0]); // TODO: ...and save us from all eval!
+          me.meta = meta;
+          me.products = re[1];
+          me.notifyChange();
+        }
+      }
+    });
   },
 
+  /**
+   * React to meta data changes, e.g. when a filter element changes its value.
+   * This function is called in the event handler of 'product-list-meta-change'.
+   */
   handleMetaChange: function (newMeta) {
     console.log('Lister: handleMetaChange', newMeta);
     // update this.meta.filter
@@ -116,6 +139,7 @@ var ProductLister = {
    */
   notifyChange: function () {
     this.events.listChange.detail.meta = this.meta;
+    this.events.listChange.detail.products = this.products;
     console.log('Lister: notifyChange', this.events.listChange.detail);
     document.dispatchEvent(this.events.listChange);
   },
@@ -123,36 +147,41 @@ var ProductLister = {
   /**
    * read initial filter options (from localstorage, url pramas, or elsewhere)
    */
-  initOptions: function () {
+  initMeta: function () {
     //var productListingOptions = localStorage.getItem('productListingOptions');
     // TODO replace line below by logic ;-)
     productListingOptions = this.meta.filter;
-    console.log('Lister: initOptions', productListingOptions);
+    console.log('Lister: initMeta', productListingOptions);
     if (typeof productListingOptions === 'object') {
       this.meta.filter = productListingOptions;
     }
   },
 
+  /**
+   * Set up custom events, initialize the meta data,
+   * attach event listener to 'product-list-meta-change'
+   * and fire 'product-list-ready' to notifiy filter and display elements
+   */
   init: function () {
-    this.events.listChange = new CustomEvent('product-list-change', {
-      "detail": {
-        "meta": this.meta,
-        "products": "to be done"
-      }
-    });
-    this.events.listReady = new CustomEvent('product-list-ready', {
-      "detail": {
-        "meta": this.meta,
-        "products": "to be done"
-      }
-    });
-    this.initOptions();
     var me = this;
+    me.events.listChange = new CustomEvent('product-list-change', {
+      "detail": {
+        "meta": me.meta,
+        "products": me.products
+      }
+    });
+    // TODO: Can these two be reduced to one event?
+    me.events.listReady = new CustomEvent('product-list-ready', {
+      "detail": {
+        "meta": me.meta,
+        "products": me.products
+      }
+    });
+    this.initMeta();
     document.addEventListener('product-list-meta-change', function (ev) {
       console.log('Lister: product-list-meta-change', ev.detail);
       me.handleMetaChange(ev.detail);
     }, false);
-    window.ProductLister = this;
     document.dispatchEvent(this.events.listReady);
   }
 };

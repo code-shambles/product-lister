@@ -1,0 +1,83 @@
+{
+  sorting: {
+    by: "price",
+    order: "asc"
+  },
+  paging: null,
+  filter: {
+    "participants": {
+      "participantsMin": [{
+          "value": 1
+        },{
+          "value": 2,
+          "active": true
+        },{
+          "value": 4
+        }],
+      "participantsMax": [{
+          "value": 1,
+          "avlbl": false
+        },{
+          "value": 2
+        },{
+          "value": 4
+        },{
+          "value": 999999
+        }]
+    },
+    "price": {
+      "priceMin": [{
+          "value": 0
+        },{
+          "value": 50,
+          "active": true
+        },{
+          "value": 200
+        },{
+          "value": 500
+        }],
+      "priceMax": [{
+          "value": 50
+        },{
+          "value": 200
+        },{
+          "value": 500,
+          "active": true
+        },{
+          "value": 999999
+        }]
+    },
+    "duration": {
+      "durationMin": [{
+          "value": 1
+        },{
+          "value": 3
+        },{
+          "value": 7
+        },{
+          "value": 10
+        },{
+          "value": 14
+        }],
+      "durationMax": [{
+          "value": 1
+        },{
+          "value": 3
+        },{
+          "value": 7
+        },{
+          "value": 10,
+          "active": true
+        },{
+          "value": 14
+        },{
+          "value": 999999
+        }]
+    }
+  }
+}
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+NOTE: This is where the DOM of the product list WOULD start.
+It does not, because it's proprietary. As soon as theres a neutral mock,
+it'll get committed.
